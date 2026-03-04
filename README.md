@@ -831,6 +831,8 @@ Ils permettent de tester les roles en profondeurs, en testant les connexions et 
 
 
 Exemple de test molecule sur pour playbook [playbooks/cluster-setup-user](https://github.com/AntoineDupre/seapath-ansible/tree/molecule-playbook/playbooks/molecule/cluster_setup_users)
+
+Note : La vérification est difficile dans les playbooks. Ici, les playbooks invoquent principalement des rôles. `verify.yml` vérifie finalement les tâches de chaque rôle, ce qui relève normalement du périmètre des tests Molecule de chaque rôle. La vérification d’un tel playbook ne doit pas reproduire les mêmes vérifications que celles effectuées dans les rôles. Les tests garantissent plutôt la bonne exécution du playbook et la compatibilité des rôles entre eux. Le fichier `verify.yml` pourrait être vide, ou seulement tester des éléments propres à la configuration. La valeur ajoutée d’un tel test, pour un playbook contenant peu de logique, reste la garantie de sa bonne exécution.
 ```
                                                                                                                                                              
   ### playbooks/molecule/cluster_setup_users/molecule.yml

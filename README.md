@@ -825,6 +825,46 @@ Molecule peut aussi servir a tester les playbooks. Les playbooks sont les interf
 
 Il est important de s'assurer que les playbooks fonctionnent donc correctement et de tester la logique de configuration et la variable utilisateurs.
 
-Les tests de playbook sont plus compliqué a mettre en places. 
+Les tests de playbook sont plus compliqué a mettre en places.
 
+Ils permettent de tester les roles en profondeurs, en testant les connexions et les variables inter-roles
+
+
+Exemple de test molecule sur pour playbook [playbooks/cluster-setup-user](https://github.com/AntoineDupre/seapath-ansible/tree/molecule-playbook/playbooks/molecule/cluster_setup_users)
+```
+                                                                                                                                                             
+  ### playbooks/molecule/cluster_setup_users/molecule.yml
+
+- 2 instances Docker (node1, node2) présentes à la fois dans les groupes `cluster_machines` et `hypervisors` — simulant un cluster à 2 nœuds
+- Idempotence ignorée (le rôle utilise des tâches `shell` et `command` qui rapportent toujours un changement)
+
+### playbooks/molecule/cluster_setup_users/prepare.yml
+
+- Installe `openssh-server` / `openssh-client`
+- Crée le groupe `libvirt` (prérequis pour la création des utilisateurs)
+- Génère les clés SSH hôte `ed25519` (nécessaires pour l’échange des `known_hosts`)
+
+### playbooks/molecule/cluster_setup_users/converge.yml
+
+- Importe le playbook réel via `import_playbook: ../../cluster_setup_users.yaml` — c’est la différence clé avec les tests de rôle.  
+  Nous testons le playbook réel tel quel.
+
+### playbooks/molecule/cluster_setup_users/verify.yml
+
+Vérifie sur les deux nœuds :
+
+- L’utilisateur `libvirtadmin` existe avec le shell `/bin/bash` et le groupe principal `libvirt`
+- Le compte est déverrouillé dans `/etc/shadow`
+- La paire de clés SSH de root a été générée
+- `authorized_keys` contient les clés du nœud pair
+- `known_hosts` contient les entrées du nœud pair
+
+---
+
+### Points clés démontrés
+
+- **Test de playbook vs test de rôle** : `converge.yml` utilise `import_playbook` pour exécuter le playbook réel sans modification
+- **Multi-nœuds** : 2 conteneurs avec des groupes d’inventaire simulent un cluster, ce qui permet de tester la logique d’échange de clés SSH
+- **Sans infrastructure lourde** : uniquement des conteneurs Docker avec `openssh` et un groupe `libvirt` — pas de Ceph, pas de démon libvirt
+```
 ***

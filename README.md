@@ -765,6 +765,10 @@ Ici est ainsi possible de récupérer dynamiquement les fichiers de scripts qui 
 
 
 
+#### Note
+claude ai en mode agent est assez compétent pour générer l'environement de test molecule, a partir du moment où il peut s'inspirer d'un exemple. En lui donnant l'exemple fait dans `network_basics`, il est capable de génrer les fichiers `prepare.yml`, `converge.yml` et `molecule.yml` de manière assez pertinente. De la meme maniere pour génrer des tests qui necessite un mock ou systemd, `claude` a besoin d'un exemple de test.
+
+Les tests réaliser dans `verifier.yml` sont a revoir car pas toujours pertinent. `claude` est donc très utile pour générer l'environement de test a partir d'un exemple, installer les pacquets, génrer des scénarios de tests (des iptables par exemple).
 
 
 ***
@@ -817,7 +821,5 @@ Molecule peut aussi servir a tester les playbooks. Les playbooks sont les interf
 Il est important de s'assurer que les playbooks fonctionnent donc correctement et de tester la logique de configuration et la variable utilisateurs.
 
 Les tests de playbook sont plus compliqué a mettre en places. 
-
-
 
 ***

@@ -8,37 +8,11 @@
 
 ## Toutes les instances
 
-### Instance 1 — Playbook prerequis Debian
+### Playbook prerequis Debian | Playbook prerequis Yocto | Playbook prerequis OracleLinux
 
 **Fichier :** `playbooks/seapath_setup_prerequisdebian.yaml:95`
 
-```yaml
-- name: Run extra commands after upload
-  shell: "{{ item }}"
-  tags:
-    - skip_ansible_lint
-  loop: "{{ commands_to_run_after_upload }}"
-  when: commands_to_run_after_upload is defined
-```
-
-La variable `commands_to_run_after_upload` est une liste de chaines de commandes shell arbitraires definies dans l'inventaire.
-
-### Instance 2 — Playbook prerequis OracleLinux
-
 **Fichier :** `playbooks/seapath_setup_prerequisoraclelinux.yaml:87`
-
-```yaml
-- name: Run extra commands after upload
-  shell: "{{ item }}"
-  tags:
-    - skip_ansible_lint
-  loop: "{{ commands_to_run_after_upload }}"
-  when: commands_to_run_after_upload is defined
-```
-
-Identique a la version Debian.
-
-### Instance 3 — Playbook prerequis Yocto
 
 **Fichier :** `playbooks/seapath_setup_prerequisyocto.yaml:59`
 
@@ -51,31 +25,10 @@ Identique a la version Debian.
   when: commands_to_run_after_upload is defined
 ```
 
-Identique aux versions Debian et OracleLinux.
-
-### Instance 4 — Role d'expansion Ceph
-
-**Fichier :** `roles/ceph_expansion_lv/tasks/main.yml:112`
-
-```yaml
-- name: Resize ceph-osd
-  command: "{{ item }}"
-  with_items:
-    - "/usr/bin/ceph-bluestore-tool bluefs-bdev-expand --path {{ ceph_expansion_lv_ceph_osd_number.files[0].path }}"
-    - "/usr/bin/ceph-bluestore-tool bluefs-bdev-expand --path {{ ceph_expansion_lv_ceph_osd_number.files[0].path }}"
-  changed_when: true
-```
-
-Cette instance presente egalement :
-- L'utilisation de `with_items:` obsolete au lieu de `loop:`
-- L'execution de la meme commande deux fois (probablement une erreur de copier-coller)
-- L'utilisation de `changed_when: true` 
-
-## Comment corriger
 
 
 
-### Pour les instances 1-3 : 
+#### Comment corriger
 
 Voir si l'exécution de commande arbitraire à travers un variable est vraiment utile. 
 La recommendation est de laisser l'utilisateur ecrire sont playbook qui exécute ce qu'il souhaite customiser plutot que d'implémenter les pattern d'exécution arbitraire de code. Typiquement, il peut y avoir des secrets dans les commandes, qui ne seront pas protégé (pas de `no_log: True` et on ne peut pas desactiver les log pour toutes les commandes).
@@ -107,8 +60,26 @@ Puis dans chaque playbook :
   ansible.builtin.import_tasks: tasks/run_post_upload_commands.yml
 ```
 
+###  Role d'expansion Ceph
 
-### Pour l'instance 4 : Remplacer par des commandes explicites
+**Fichier :** `roles/ceph_expansion_lv/tasks/main.yml:112`
+
+```yaml
+- name: Resize ceph-osd
+  command: "{{ item }}"
+  with_items:
+    - "/usr/bin/ceph-bluestore-tool bluefs-bdev-expand --path {{ ceph_expansion_lv_ceph_osd_number.files[0].path }}"
+    - "/usr/bin/ceph-bluestore-tool bluefs-bdev-expand --path {{ ceph_expansion_lv_ceph_osd_number.files[0].path }}"
+  changed_when: true
+```
+
+Cette instance presente egalement :
+- L'utilisation de `with_items:` obsolete au lieu de `loop:`
+- L'execution de la meme commande deux fois (probablement une erreur de copier-coller)
+- L'utilisation de `changed_when: true` 
+
+
+#### Comment corriger: Remplacer par des commandes explicites
 
 ```yaml
 # AVANT — meme commande repetee deux fois via boucle

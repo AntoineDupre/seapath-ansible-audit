@@ -216,7 +216,7 @@ roles/cephadm/tasks/
 └── cleanup_registry.yml
 ```
 ### Extras
-Certaines taches de configurations des OS comportent de la duplication de code: see: https://github.com/AntoineDupre/seapath-ansible/wiki/Code-dupliqu%C3%A9
+Certaines taches de configurations des OS comportent de la duplication de code: see: details/duplicated_code.md
 
 Il est difficile de tester les fichiers monolythiques, il est important de les restructurer pour pouvoir ecrire des tests simple. Un exemple de test et de restructuration peut etre vu [ici](https://github.com/AntoineDupre/seapath-ansible/tree/refactor-centos-roles/roles/centos)
 

@@ -4,7 +4,7 @@
 
 | Points | Taches | Description |
 | ------ | ------ | ----------- |
-| [1] | [Amélioration CI](#Amelioration-CI) | Creation de stage dans le CI (Q&A / Molecule Test / Functionnal Test / Report) 
+| [0] | [Amélioration CI](#Amelioration-CI) | Creation de stage dans le CI (Q&A / Molecule Test / Functionnal Test / Report) 
 | [1] | [Améliotation linter](#Ameliotation-linter) | Activer les règles manquantes de `ansible-lint` et `yamllint` |
 | [1] | [Pre commit](#Pre-commit) | Ajout d'outil permettant de s'affranchir des problemes de Q&A dans les commits. |
 
@@ -21,7 +21,7 @@
 | ------ | ------ | ----------- |
 | [0] | [Secret proteger](#Secret-protégé) | S'assurer que les secrets n'apparaissent pas dans le log produit par ansible. Utilisation de `no_log: True` |
 | [1] | [Ansible Vault](#Ansible-Vault): | Le projet ne comporte pas de secret, mais il est important de sensibiliser les utilisateurs et les rédacteur de playbook aux enjeux de protéger les mots de passes et secret via AnsibleVault |
-| [3] | [Porter des scripts](#Audit-Script) | Auditer les scripts déployés par ansible. Le projet contient des scripts qui sont souvent cachés dans la structure d'un role. Les scripts ainsi déployé doivent resté minimaliste et ne pas introduire de logique trop complexe (voir email sécurité snmp sur mailing list seapath|
+| [5] | [Porter des scripts](#Audit-Script) | Auditer les scripts déployés par ansible. Le projet contient des scripts qui sont souvent cachés dans la structure d'un role. Les scripts ainsi déployé doivent resté minimaliste et ne pas introduire de logique trop complexe (voir email sécurité snmp sur mailing list seapath|
 | [3] | [Utilisateur par service](#Utilisateur-par-service) | S'assurer que les services déployés, particulièrement ceux qui exécute des scripts ou de la logique customisée, s'execute avec des permissions limitées et un utilisateur dédié |
 | | [Avertissement Ansible](#Parametres-commandes) | Bien lire les recommandations de la documentation des commandes ansible avant de manipulé les paramètre et changer le comportement par défaut |
 
@@ -40,8 +40,8 @@
 **[Test unitaire]**
 | Points | Taches | Description |
 | ------ | ------ | ----------- |
-| [3] | [Test script](#test-script) | Les scripts complexes doivent avoir des tests unitaires afin de garantir leurs logiques.  | 
 | [8] | [Test roles](#test-roles) | Les tests actuelles sont des tests fonctionnelles, des tests unitaires indépendant devrait etre ajouté.| 
+| [5] | [Test script](#test-script) | Les scripts complexes doivent avoir des tests unitaires afin de garantir leurs logiques.  | 
 | [8] | [Test playbook](#test-playbook) | Les playbooks doivent avoir des tests. Les playbooks correspond à l'interface offerte aux utilisateurs, ils doivent etre fiable et testé.| 
 
 

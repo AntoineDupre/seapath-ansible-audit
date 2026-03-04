@@ -815,6 +815,9 @@ Voici la liste des scripts du projet qui idéalement devrait etre testé.
 - roles/snmp/files/scripts/virt-df.sh
 ```
 
+
+Un exemple de test pour `roles/backup_restore/files/scripts/remove_disk_xml.py` est disponible dans [cette branche](https://github.com/AntoineDupre/seapath-ansible/tree/molecule-test-script/roles/backup_restore)
+
 ***
 ### test playbook
 

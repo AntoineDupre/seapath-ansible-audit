@@ -4,8 +4,8 @@
 
 | Points | Taches | Description |
 | ------ | ------ | ----------- |
-| [1] | [Amélioration CI](#Amélioration-CI) | Creation de stage dans le CI (Q&A / Molecule Test / Functionnal Test / Report) 
-| [1] | [Améliotation linter](#Améliotation-linter) | Activer les règles manquantes de `ansible-lint` et `yamllint` |
+| [1] | [Amélioration CI](#Amelioration-CI) | Creation de stage dans le CI (Q&A / Molecule Test / Functionnal Test / Report) 
+| [1] | [Améliotation linter](#Ameliotation-linter) | Activer les règles manquantes de `ansible-lint` et `yamllint` |
 | [1] | [Pre commit](#Pre-commit) | Ajout d'outil permettant de s'affranchir des problemes de Q&A dans les commits. |
 
 
@@ -81,7 +81,7 @@ Recommandations lors de l’écriture ou du refactoring d’un rôle:
 
 
 Description Taches:
-### Amélioration CI
+### Amelioration-CI
 Voir proposal: https://github.com/seapath/ansible/pull/886
 
 L'idée est d'alléger les tests fonctionnelles de tous les tests qui sont propre au repo ansible. Les machines qui exécutes les tests fonctionnelles sont des ressources limités, et il est préférable de ne pas les surcharger ou les polluer avec des tests qui peuvent etre exécutés dans des environnement plus standard.
@@ -92,7 +92,7 @@ La PR propose de séparer les tests Q&A, mais l'idée générale est également 
 
 ***
 
-### Améliotation linter
+### Ameliotation-linter
 `ansible-lint` est un linter qui verifie la structure des fichiers yaml et qui vérifie que le projet respecte les conventions, les standards et bonnes pratiques d'ansible.
 
 Des vérifications sont désactivé, et devrait être réactiver afin d'améliorer la qualité global. En terme de qualité, il faut considéré la mentra suivante: 
@@ -105,7 +105,7 @@ Les règles désactivé sont:
 | ----- | ------ | ----------- |
 | unnamed-task | Correspond aux taches de debug | La règle ne devrait pas etre désactivé globalement, mais devrait être explicitement désactiver via `# noqa: ` dans le code roblème réglé dans la PR https://github.com/seapath/ansible/pull/874  |
 | yaml | Correspond aux erreurs de plus de 80 caractères par ligne | La règle des 80 characteres doit etre désactivées dans `.yamllint` en ajoutant `line-length: disable` au lieu de désactiver tous le linter yaml.  |
-| fqcn-builtins | Version d'ansible trop vieille a cause `ceph-ansible`| La version d'ansible est maintenant 2.16 et permet d'activer cette régle. [(Analyse détaillée)](https://github.com/AntoineDupre/seapath-ansible/wiki/Q&A-FQCN)
+| fqcn-builtins | Version d'ansible trop vieille a cause `ceph-ansible`| La version d'ansible est maintenant 2.16 et permet d'activer cette régle. [(Analyse détaillée)](docs/fqnc.md)
 | file permissions | Doit être fait fichier par fichier | Les fichiers sans mode vont utiliser les `umask` par défaut. Il semble que sur toute les distributions de seapath, le umask est le même `0022`. Donc les fichiers ont par défaut le mode `0644` et les répertories `0755`. Réglé dans un PR avec un approche qui utilise `# noqa` plutot que de définir les modes explicitement: https://github.com/seapath/ansible/pull/885 |
 
 Les cas d'usages qui ont amené a désactiver les règle de linter ne justifie pas de désactiver la totalité des vérifications.
@@ -169,7 +169,7 @@ Une analyse approfondie des patterns doit être mené.
 
 Pattern a revoir identifié:
 
-**shell: "{{ item }}"**: [Article détaillé](https://github.com/AntoineDupre/seapath-ansible/wiki/Eliminer-le-pattern--shell:-%22%7B%7B-item-%7D%7D%22)
+**shell: "{{ item }}"**: [Article détaillé](details/anti_patern.md)
 
 **Wipe approche** Il n'est pas recommandé de supprimer l'intégralité d'un répertoire avant de déployé un fichier. Ceci est fait par exemple [ici](https://github.com/seapath/ansible/blob/6ec11580566ef0296d0c79913af1393252abfb5d/roles/network_basics/tasks/main.yml#L5). Ceci casse le concepte d'idemptency car l'action de suppression sera toujours effectuée.
 
@@ -177,6 +177,9 @@ L'approche recommandé est définir un role qui décrit que seul le fichier que 
 
 ***
 ### tache monolitique
+
+[Explication détaillée](details/monolitit.md)
+
 Des fichiers de taches de roles melangent de nombreuses taches indépendantes dans un seul fichier. Cela les rend :
 
     Difficiles a relire — une PR touchant une section imacte le fichier entier
@@ -200,7 +203,6 @@ Fichiers identifiés:
 
 [Exemple de découpage](https://github.com/AntoineDupre/seapath-ansible/tree/refactor-centos-roles/roles/centos)
 
-[Explication détaillée](https://github.com/AntoineDupre/seapath-ansible/wiki/Decouper-les-gros-fichiers-de-taches)
 
 ***
 ### Code dupliqué
@@ -211,7 +213,7 @@ Du code est dupliqué massivement entre les roles specifiques aux distributions 
 - **La divergence est inevitable** — les copies derivent au fil du temps (et c'est deja le cas)
 - **La charge de revue est triplee** — les PRs touchant une distribution devraient toucher les trois
 
-[Article détaillé](https://github.com/AntoineDupre/seapath-ansible/wiki/Code-dupliqu%C3%A9)
+[Article détaillé](details/duplicated_code.md)
 
 ***
 ### Secret protégé
@@ -639,6 +641,8 @@ Si une tache a deja une condition `when:` qui empeche la re-execution, `changed_
 ```
 
 `changed_when: true` peut mentir au moteur de convergence dans ce cass si la condition est vrai mais que la command n’a rien modifié ou a échoué., Les opérations ponctuelles peuvent être acceptées si elles sont gérées de manière idempotente (garde + preuve d’état) ; `changed_when: true` reste un dernier recours et doit être justifié.
+
+[Liste détaillés des fichiers concernés](details/changed_when_list.md)
 
 ***
 ### Idempotecy Action vers Etat

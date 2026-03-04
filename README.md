@@ -817,7 +817,26 @@ Voici la liste des scripts du projet qui idéalement devrait etre testé.
 
 
 Un exemple de test pour `roles/backup_restore/files/scripts/remove_disk_xml.py` est disponible dans [cette branche](https://github.com/AntoineDupre/seapath-ansible/tree/molecule-test-script/roles/backup_restore)
+```
+roles/backup_restore/molecule/default/molecule.yml: Scénario basé sur Docker avec l’idempotence ignorée (l’exécution de scripts n’est pas idempotente par nature)
 
+roles/backup_restore/molecule/default/prepare.yml:  Installe `python3-lxml`, copie le script dans le conteneur et crée deux fixtures XML de test :
+- Une avec 2 éléments `<disk>` plus d’autres périphériques
+- Une sans éléments `<disk>`
+
+roles/backup_restore/molecule/default/converge.yml: Exécute `remove_disk_xml.py` sur les deux entrées de test (aucun rôle Ansible impliqué, exécution pure du script)
+
+roles/backup_restore/molecule/default/verify.yml:  Vérifie :
+- Le fichier de sortie existe
+- Tous les éléments `<disk>` ont été supprimés
+- Les éléments non liés aux disques (`<interface>`, `<console>`) sont conservés
+- La structure du domaine (`<name>`, `<memory>`, `<devices>`) est préservée
+- Un XML sans disques est transmis sans modification
+
+### Différence clé avec les tests de rôle
+
+Le fichier `converge.yml` utilise `ansible.builtin.command` pour exécuter directement le script Python au lieu d’appliquer un rôle Ansible. Cela démontre que Molecule peut servir de **framework de tests unitaires pour scripts** le conteneur fournit un environnement propre et reproductible pour tester le comportement du script avec des entrées contrôlées et des sorties vérifiées.
+```
 ***
 ### test playbook
 
@@ -837,7 +856,7 @@ Note : La vérification est difficile dans les playbooks. Ici, les playbooks inv
                                                                                                                                                              
   ### playbooks/molecule/cluster_setup_users/molecule.yml
 
-- 2 instances Docker (node1, node2) présentes à la fois dans les groupes `cluster_machines` et `hypervisors` — simulant un cluster à 2 nœuds
+- 2 instances Docker (node1, node2) présentes à la fois dans les groupes `cluster_machines` et `hypervisors`:  simulant un cluster à 2 nœuds
 - Idempotence ignorée (le rôle utilise des tâches `shell` et `command` qui rapportent toujours un changement)
 
 ### playbooks/molecule/cluster_setup_users/prepare.yml
@@ -848,7 +867,7 @@ Note : La vérification est difficile dans les playbooks. Ici, les playbooks inv
 
 ### playbooks/molecule/cluster_setup_users/converge.yml
 
-- Importe le playbook réel via `import_playbook: ../../cluster_setup_users.yaml` — c’est la différence clé avec les tests de rôle.  
+- Importe le playbook réel via `import_playbook: ../../cluster_setup_users.yaml`:  c’est la différence clé avec les tests de rôle.  
   Nous testons le playbook réel tel quel.
 
 ### playbooks/molecule/cluster_setup_users/verify.yml
@@ -867,6 +886,6 @@ Vérifie sur les deux nœuds :
 
 - **Test de playbook vs test de rôle** : `converge.yml` utilise `import_playbook` pour exécuter le playbook réel sans modification
 - **Multi-nœuds** : 2 conteneurs avec des groupes d’inventaire simulent un cluster, ce qui permet de tester la logique d’échange de clés SSH
-- **Sans infrastructure lourde** : uniquement des conteneurs Docker avec `openssh` et un groupe `libvirt` — pas de Ceph, pas de démon libvirt
+- **Sans infrastructure lourde** : uniquement des conteneurs Docker avec `openssh` et un groupe `libvirt` pas de Ceph, pas de démon libvirt
 ```
 ***

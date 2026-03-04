@@ -53,7 +53,8 @@ L’application de ces recommandations constitue un processus progressif à l’
 Cette approche vise à mettre en place les bonnes pratiques décrites ci-dessous en priorité pour :
  - Les rôles critiques (à identifier)
  - Les nouveaux rôles
- - Les rôles faisant l’objet d’un besoin de refactoring (voir liste)
+ - Les rôles faisant l’objet d’un besoin de refactoring
+ - Les rôles qui manipulent des scripts
 
 Recommandations lors de l’écriture ou du refactoring d’un rôle:
 
@@ -665,10 +666,6 @@ L’objectif est d’ajouter des tâches de vérification d’état avant ou apr
 
 
 ***
-
-
-### 
-***
 ### Tags
 Il est recommandé d’utiliser des tags dans les rôles Ansible afin d’améliorer la flexibilité d’exécution des playbooks et de faciliter les opérations en environnement de production.
 
@@ -693,8 +690,93 @@ ansible-playbook site.yml --skip-tags raw_cmd --check
 ```
 
 
+
+
+***
+### test roles
+Les roles peuvent être tester indépendament des tests de CI actuelle.
+
+Les tests de CI sont des tests fonctionnel, les roles doivent être testé unitairement.
+
+Un proposal est ouvert sur le upstream: https://github.com/seapath/ansible/pull/875
+
+Ce qu'il faut retenir:
+ - Molecule permet l'execution de role dans des environements simple
+ - Molecule permet de configurer un environement de test pour le role, en proposant diverse scénario
+ - Molecule permet de tester le resultat des roles via des playbook de tests.
+ - Les tests unitaires sont définis au niveau des roles
+ - L'ajout d'un [orchestrateur](https://github.com/AntoineDupre/seapath-ansible/blob/proposal-molecule-test/tox.ini) comme `tox` permet d'exécuter tout les tests molécules depuis la racine du projet
+ - `Tox` permet egalement de tester les roles avec différentes version d'ansible.
+
+
+Des exemples de tests sont disponible dans des branches de mon fork (pourront etre merger dans le upstream une fois le proposal accepté).
+
+1 - [Exemple Basic](https://github.com/AntoineDupre/seapath-ansible/tree/proposal-molecule-test/roles/network_basics)
+
+Test de `roles/network_basics` en illustrant la capacité de créé des scénarios et de cpnfigurer les variables du roles.
+
+2 -  [Test avec cluster (plusieurs machines)](https://github.com/AntoineDupre/seapath-ansible/tree/molecule-libvirtadmin/roles/add_libvirtadmin_user)
+
+Exemple de test plus complexe, utilisant plusieurs instance de test afin de vérifier la copie de clé entre les différentes instances.
+
+3 - [Test systemd + environement ressources partagés + custom image](https://github.com/AntoineDupre/seapath-ansible/tree/refactor-centos-roles/roles/centos)
+
+Un exemple de restructuration d'un roles complexes. Lorsqu'un role est difficile a tester, il est souvent important de le restructurer en tache plus unitaire. Ici, on décompose `roles/centos/tasks/main.yml` en un ensemble de sous fichier indépendant. Chaque fichier peut ainsi avoir son propre environement de test. 
+
+Le test montre également comment il est possible entre les scénarios de partager des environements ou des fichiers de configuration en commun.
+
+Cette exemple montre egalement comment il est possible d'ajouter ces propres images docker dans le processus de test (pas forcément necessaire ici).
+
+De plus, cette exemple permet d'illustrer les étapes nécessaire pour tester les services en s'assurant que `systemd` soit bien présent.
+
+ 
+ 4 - [Mock dans molecule](https://github.com/AntoineDupre/seapath-ansible/tree/mock-molecule-test/roles/network_sriovpool)
+
+Un exemple d'environement ou l'utilitaire de gestion de VM ne peut être simplement installé. L'exemple montre ainsi comment mock la commande et garder un historique des appels qui peut ensuite etre utilsé pour s'assurer de la bonne exécution. Il serait egalement possible de configurer via le mock le retour des commandes, ou générer des side_effects.
+
+
+ 5 -  [Verifier Testinfra](https://github.com/AntoineDupre/seapath-ansible/tree/testinfra--backup-restore/roles/backup_restore)
+
+Un exemple de test molecule qui utilise un `verifier` différent, testinfra. Cela permet de tester le résultat du role ansible via des tests python standard, compatible avec pytest. Il est ainsi possible de faire des tests avancé, et d'utiliser des outils (coverage, metrics, framework ...) de tests avancé.
+
+Il est nottament possible d'utiliser des `fixtures` ou des tests paramétrisés. 
+```python
+def _scripts():
+    scripts_dir = Path(os.environ["SCRIPTS_SRC_DIR"])
+    return sorted(
+        p.name
+        for p in scripts_dir.iterdir()
+        if p.is_file() and not p.name.startswith(".")
+    )
+
+
+@pytest.fixture(params=_scripts(), ids=str)
+def deployed_script_name(request):
+    return request.param
+
+def test_scripts_are_present(host, deployed_script_name):
+    f = host.file(str(DEST_DIR / deployed_script_name))
+    assert f.exists
+    assert f.is_file
+    assert f.user == "root"
+    assert f.group == "root"
+```
+Ici est ainsi possible de récupérer dynamiquement les fichiers de scripts qui doivent être déployé et de s'assurer qu'ils ont bien été déployé. Le tests sera exécuté autant de fois qu'il y a de script. Si deux fixtures sont utilisées, toutes les combinaisons possibles seront testées.
+
+
+
+
+
 ***
 ### test script
+
+Le projet déploie beaucoup de script. Ceci est de la logique qui va être déployé en production. 
+
+Molecule permet egalement de tester ces scripts, en déployant en environement de tests, et en ajoutant dans `converge.yml` ou `verify.yml` des tests qui invoquent les scripts, ou s'assure du fonctionnement des scripts si ils sont exécuté par des services.
+
+Il est judicieux, en plus des tests molecules qui test le déploiment, d'ajouter des scénarios de tests qui tests également la logique des tests.
+
+Voici la liste des scripts du projet qui idéalement devrait etre testé.
 
 library/cluster_vm.py
 roles/backup_restore/files/scripts/backup_du.py
@@ -725,12 +807,6 @@ roles/ptp_status_vsock/files/ptpstatus/ptpstatus.sh
 roles/snmp/files/scripts/virt-df.sh
 
 
-
-
-***
-### test roles
-
-TESTER LES SCIPTS DANS UN CONTEXTE DEXECUTION
 ***
 ### test playbook
 ***
@@ -741,9 +817,4 @@ TESTER LES SCIPTS DANS UN CONTEXTE DEXECUTION
 [Proposal molecule](https://github.com/seapath/ansible/pull/875)
 
 branches molecule:
- - [Exemple Basic](https://github.com/AntoineDupre/seapath-ansible/tree/proposal-molecule-test/roles/network_basics)
- - [Orchestrateur](https://github.com/AntoineDupre/seapath-ansible/blob/proposal-molecule-test/tox.ini)
- - [Test avec cluster (plusieurs machines)](https://github.com/AntoineDupre/seapath-ansible/tree/molecule-libvirtadmin/roles/add_libvirtadmin_user)
- - [Test systemd + environement ressources partagés + custum image](https://github.com/AntoineDupre/seapath-ansible/tree/refactor-centos-roles/roles/centos)
- - [Verifier Testinfra](https://github.com/AntoineDupre/seapath-ansible/tree/testinfra--backup-restore/roles/backup_restore)
- - [Mock dans molecule](https://github.com/AntoineDupre/seapath-ansible/tree/mock-molecule-test/roles/network_sriovpool)
+

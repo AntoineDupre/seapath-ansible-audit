@@ -821,11 +821,3 @@ Les tests de playbook sont plus compliqué a mettre en places.
 
 
 ***
-
-
-
-## Ressources
-[Proposal molecule](https://github.com/seapath/ansible/pull/875)
-
-branches molecule:
-

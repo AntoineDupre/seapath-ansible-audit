@@ -771,6 +771,8 @@ claude ai en mode agent est assez compétent pour générer l'environement de te
 Les tests réaliser dans `verifier.yml` sont a revoir car pas toujours pertinent. `claude` est donc très utile pour générer l'environement de test a partir d'un exemple, installer les pacquets, génrer des scénarios de tests (des iptables par exemple).
 
 
+Une tentative de [commande claude](claude/molecule.md) est disponible
+
 ***
 ### test script
 

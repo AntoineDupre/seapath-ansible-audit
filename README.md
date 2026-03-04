@@ -778,37 +778,48 @@ Il est judicieux, en plus des tests molecules qui test le déploiment, d'ajouter
 
 Voici la liste des scripts du projet qui idéalement devrait etre testé.
 
-library/cluster_vm.py
-roles/backup_restore/files/scripts/backup_du.py
-roles/backup_restore/files/scripts/get_metadata.py
-roles/backup_restore/files/scripts/remove_disk_xml.py
-roles/ci_yocto/get_system_info/files/get_system_info.py
-roles/ci_yocto/run_tests/files/run_cyclictest.py
-roles/configure_nic_irq_affinity/files/setup_nic_irq_affinity.py
-roles/debian_tests/cukinia-tests/includes/ioperm.py
-roles/debian_tests/cukinia-tests/includes/prctl.py
-roles/debian_tests/cukinia-tests/includes/ptrace.py
-roles/ptp_status_vsock/files/ptp_vsock.py
-roles/snmp/files/snmp_getdata.py
-roles/vmmgrapi/files/wsgi.py
-scripts/get_osd.py
-
-roles/backup_restore/files/scripts/backup-restore.sh
-roles/backup_restore/files/scripts/backup_full.sh
-roles/backup_restore/files/scripts/backup_inc.sh
-roles/backup_restore/files/scripts/edit_metadata.sh
-roles/backup_restore/files/scripts/edit_vmxml.sh
-roles/backup_restore/files/scripts/restore_vm.sh
-roles/ci_yocto/reboot_on_usb_drive/files/configure_boot_next_usb_drive.sh
-roles/debian_hardening/files/mktmpdir.sh
-roles/debian_hardening/files/terminal_idle.sh
-roles/deploy_cephfs/files/wait-for-mds.sh
-roles/ptp_status_vsock/files/ptpstatus/ptpstatus.sh
-roles/snmp/files/scripts/virt-df.sh
-
+```
+- library/cluster_vm.py
+- roles/backup_restore/files/scripts/backup_du.py
+- roles/backup_restore/files/scripts/get_metadata.py
+- roles/backup_restore/files/scripts/remove_disk_xml.py
+- roles/ci_yocto/get_system_info/files/get_system_info.py
+- roles/ci_yocto/run_tests/files/run_cyclictest.py
+- roles/configure_nic_irq_affinity/files/setup_nic_irq_affinity.py
+- roles/debian_tests/cukinia-tests/includes/ioperm.py
+- roles/debian_tests/cukinia-tests/includes/prctl.py
+- roles/debian_tests/cukinia-tests/includes/ptrace.py
+- roles/ptp_status_vsock/files/ptp_vsock.py
+- roles/snmp/files/snmp_getdata.py
+- roles/vmmgrapi/files/wsgi.py
+- scripts/get_osd.py
+```
+```
+- roles/backup_restore/files/scripts/backup-restore.sh
+- roles/backup_restore/files/scripts/backup_full.sh
+- roles/backup_restore/files/scripts/backup_inc.sh
+- roles/backup_restore/files/scripts/edit_metadata.sh
+- roles/backup_restore/files/scripts/edit_vmxml.sh
+- roles/backup_restore/files/scripts/restore_vm.sh
+- roles/ci_yocto/reboot_on_usb_drive/files/configure_boot_next_usb_drive.sh
+- roles/debian_hardening/files/mktmpdir.sh
+- roles/debian_hardening/files/terminal_idle.sh
+- roles/deploy_cephfs/files/wait-for-mds.sh
+- roles/ptp_status_vsock/files/ptpstatus/ptpstatus.sh
+- roles/snmp/files/scripts/virt-df.sh
+```
 
 ***
 ### test playbook
+
+Molecule peut aussi servir a tester les playbooks. Les playbooks sont les interfaces mis a dispositions des utilisateurs. 
+
+Il est important de s'assurer que les playbooks fonctionnent donc correctement et de tester la logique de configuration et la variable utilisateurs.
+
+Les tests de playbook sont plus compliqué a mettre en places. 
+
+
+
 ***
 
 

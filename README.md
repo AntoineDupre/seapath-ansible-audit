@@ -538,7 +538,14 @@ group_vars/
 ***
 ### roles de ci
 Des roles sont présent dans le répo ansible qui concerne la configuration du CI. Il devrait etre déplacer dans leurs propres repository et ne pas etre mélanger avec des roles de producitons.
-
+```
+ci_centos
+ci_cleanup_varlog
+ci_reinstalliso
+ci_restore_snapshot
+ci_restoredd
+ci_yocto
+```
 
 ***
 ### Rennomer le dossier inventaires en exemple_inventaire 

@@ -885,8 +885,8 @@ Vérifie sur les deux nœuds :
 - L’utilisateur `libvirtadmin` existe avec le shell `/bin/bash` et le groupe principal `libvirt`
 - Le compte est déverrouillé dans `/etc/shadow`
 - La paire de clés SSH de root a été générée
-- `authorized_keys` contient les clés du nœud pair
-- `known_hosts` contient les entrées du nœud pair
+- `authorized_keys` contient les clés
+- `known_hosts` contient les entrées 
 
 ---
 

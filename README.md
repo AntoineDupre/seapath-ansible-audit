@@ -83,7 +83,7 @@ Recommandations lors de l’écriture ou du refactoring d’un rôle:
 
 Description Taches:
 ### Amelioration-CI
-Voir proposal: https://github.com/seapath/ansible/pull/886
+[MERGED] Voir proposal: https://github.com/seapath/ansible/pull/886
 
 L'idée est d'alléger les tests fonctionnelles de tous les tests qui sont propre au repo ansible. Les machines qui exécutes les tests fonctionnelles sont des ressources limités, et il est préférable de ne pas les surcharger ou les polluer avec des tests qui peuvent etre exécutés dans des environnement plus standard.
 
